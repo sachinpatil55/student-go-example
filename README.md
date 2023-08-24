@@ -36,7 +36,7 @@ The application exposes the following REST APIs:
 - Response:
   json
   {​​
-    "enrollment_number": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+    "enrollmentNumber": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
   }​​
   
 ### Get All Students
