@@ -28,7 +28,6 @@ func init() {
  session, err = cluster.CreateSession()
  if err != nil {
   log.Fatal(err)
-
  }
 }
 
@@ -111,32 +110,31 @@ func deleteStudent(w http.ResponseWriter, r *http.Request) {
 }
 
 func forceDeleteStudent(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	studentID,_ := gocql.ParseUUID(params["studentId"])
-	query := "DELETE FROM students WHERE id = ?"
-	err := session.Query(query, studentID).Exec()
-	if err != nil {
-	 http.Error(w, err.Error(), http.StatusInternalServerError)
-	 return
-	}
-	fmt.Fprintf(w, "Student with ID %s has been deleted permenantly", studentID)
+ params := mux.Vars(r)
+ studentID,_ := gocql.ParseUUID(params["studentId"])
+ query := "DELETE FROM students WHERE id = ?"
+ err := session.Query(query, studentID).Exec()
+ if err != nil {
+  http.Error(w, err.Error(), http.StatusInternalServerError)
+  return
+ }
+ fmt.Fprintf(w, "Student with ID %s has been deleted permenantly", studentID)
 }
 
 func getArchivedStudents(w http.ResponseWriter, r *http.Request)  {
-	query := "SELECT id, name, age, class,  subject, deleted FROM students WHERE deleted = ? ALLOW FILTERING"
-	iter := session.Query(query, true).Iter()
-	var students []Student
-	var student Student
-	fmt.Println("outside loop")
-	for iter.Scan(&student.ID, &student.Name, &student.Age, &student.Class, &student.Subject, &student.Deleted) {
-	 fmt.Println("inside loop")
-	 students = append(students, student)
-	}
-	if err := iter.Close(); err != nil {
-	 http.Error(w, err.Error(), http.StatusInternalServerError)
-	 fmt.Println("Error while getting Archived students")
-	 return
-	}
-	json.NewEncoder(w).Encode(students)
-	
+ query := "SELECT id, name, age, class,  subject, deleted FROM students WHERE deleted = ? ALLOW FILTERING"
+ iter := session.Query(query, true).Iter()
+ var students []Student
+ var student Student
+ fmt.Println("outside loop")
+ for iter.Scan(&student.ID, &student.Name, &student.Age, &student.Class, &student.Subject, &student.Deleted) {
+  fmt.Println("inside loop")
+  students = append(students, student)
+ }
+ if err := iter.Close(); err != nil {
+  http.Error(w, err.Error(), http.StatusInternalServerError)
+  fmt.Println("Error while getting Archived students")
+  return
+ }
+ json.NewEncoder(w).Encode(students)	
 }
